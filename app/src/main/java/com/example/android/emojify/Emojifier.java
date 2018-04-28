@@ -34,6 +34,7 @@ class Emojifier {
 
     private static final String LOG_TAG = Emojifier.class.getSimpleName();
 
+    private static final float EMOJI_SCALE_FACTOR = .9f;
     private static final double SMILING_PROB_THRESHOLD = .15;
     private static final double EYE_OPEN_PROB_THRESHOLD = .5;
 
@@ -63,7 +64,7 @@ class Emojifier {
         Log.d(LOG_TAG, "detectFaces: number of faces = " + faces.size());
 
         // COMPLETED (7): Create a variable called resultBitmap and initialize it to the original picture bitmap passed into the detectFacesAndOverlayEmoji() method
-        Bitmap resultBitmap = null;
+        Bitmap resultBitmap = picture;
 
         // If there are no faces detected, show a Toast message
         if (faces.size() == 0) {
@@ -73,14 +74,12 @@ class Emojifier {
             // Iterate through the faces
             for (int i = 0; i < faces.size(); ++i) {
                 Face face = faces.valueAt(i);
-                // Get the appropriate emoji for each face
-                Emoji emoji = whichEmoji(face);
 
                 // COMPLETED (4): Create a variable called emojiBitmap to hold the appropriate Emoji bitmap and remove the call to whichEmoji()
                 Bitmap emojiBitmap;
                 int emojiDrawableId;
                 // COMPLETED (5): Create a switch statement on the result of the whichEmoji() call, and assign the proper emoji bitmap to the variable you created
-                switch (emoji) {
+                switch (whichEmoji(face)) {
 
                     case SMILE:
                         emojiDrawableId = R.drawable.smile;
@@ -107,7 +106,7 @@ class Emojifier {
                         emojiDrawableId = R.drawable.closed_frown;
                         break;
                     default:
-                        emojiDrawableId = R.drawable.smile;
+                        emojiDrawableId = 0;
                 }
                 emojiBitmap = BitmapFactory.decodeResource(context.getResources(), emojiDrawableId);
                 // COMPLETED (8): Call addBitmapToFace(), passing in the resultBitmap, the emojiBitmap and the Face  object, and assigning the result to resultBitmap
@@ -196,7 +195,7 @@ class Emojifier {
                 backgroundBitmap.getHeight(), backgroundBitmap.getConfig());
 
         // Scale the emoji so it looks better on the face
-        float scaleFactor = 1;
+        float scaleFactor = EMOJI_SCALE_FACTOR;
 
         // Determine the size of the emoji to match the width of the face and preserve aspect ratio
         int newEmojiWidth = (int) (face.getWidth() * scaleFactor);
